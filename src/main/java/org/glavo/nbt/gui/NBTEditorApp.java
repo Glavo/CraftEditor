@@ -34,4 +34,8 @@ public final class NBTEditorApp extends Application {
         primaryStage.setOnCloseRequest(event -> apps.remove(this));
         primaryStage.show();
     }
+
+    public Stage getStage() {
+        return stage;
+    }
 }
