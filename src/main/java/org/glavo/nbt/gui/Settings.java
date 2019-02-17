@@ -2,10 +2,14 @@ package org.glavo.nbt.gui;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.css.Styleable;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 import org.glavo.nbt.util.Resources;
 
 import java.io.*;
@@ -182,15 +186,11 @@ public final class Settings implements Cloneable {
 
     public static Settings Global() {
         if (Global == null) {
-            synchronized (Settings.class) {
-                if (Global == null) {
-                    try {
-                        Global = loadFrom(Resources.SettingsPath);
-                        CssUrl.setValue(Global.saveToTempCss());
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                }
+            try {
+                Global = loadFrom(Resources.SettingsPath);
+                CssUrl.setValue(Global.saveToTempCss());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
         }
 
@@ -239,5 +239,17 @@ public final class Settings implements Cloneable {
         for (Styleable styleable : s) {
             styleable.getStyleClass().addAll(TEXT_CSS_CLASS);
         }
+    }
+
+    private static final Object LISTENER_KEY = new Object();
+
+    public static void applySettingsFor(Stage stage) {
+        stage.getScene().getStylesheets().add(CssUrl.getValue());
+        ChangeListener<String> listener = (observable, oldValue, newValue) -> {
+            stage.getScene().getStylesheets().remove(oldValue);
+            stage.getScene().getStylesheets().add(newValue);
+        };
+        CssUrl.addListener(new WeakChangeListener<>(listener));
+        stage.getProperties().put(LISTENER_KEY, listener);
     }
 }

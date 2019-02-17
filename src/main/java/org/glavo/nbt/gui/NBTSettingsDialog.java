@@ -23,11 +23,6 @@ public final class NBTSettingsDialog extends Stage {
     private static NBTSettingsDialog dialog;
     private static final ResourceBundle resources = Resources.findResourceBundle(NBTSettingsDialog.class);
 
-    private ChangeListener<String> listener = (observable, oldValue, newValue) -> {
-        this.getScene().getStylesheets().remove(oldValue);
-        this.getScene().getStylesheets().add(newValue);
-    };
-
     public abstract class SettingItem implements PropertySheet.Item {
         public final String propertyName;
         public final Class<?> type;
@@ -200,10 +195,9 @@ public final class NBTSettingsDialog extends Stage {
         /*
          * Scene
          */
-        Scene scene = new Scene(root, 500, 500);//TODO
-        scene.getStylesheets().add(Settings.CssUrl.getValue());
-        Settings.CssUrl.addListener(new WeakChangeListener<>(listener));
+        Scene scene = new Scene(root, 500, 500); //TODO
         this.setScene(scene);
+        Settings.applySettingsFor(this);
     }
 
     public void commitChange() {

@@ -50,7 +50,8 @@ public final class FontHelper {
     }
 
     public static String styleToCssWeight(String style) {
-        return Integer.toString(FontWeight.findByName(style).getWeight());
+        FontWeight w = FontWeight.findByName(style);
+        return w == null ? style : Integer.toString(w.getWeight());
     }
 
     static {
