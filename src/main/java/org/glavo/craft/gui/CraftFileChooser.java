@@ -1,9 +1,9 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import org.glavo.nbt.util.Resources;
+import org.glavo.craft.util.Resources;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public final class NBTFileChooser {
-    private static final ResourceBundle resources = Resources.findResourceBundle(NBTFileChooser.class);
+public final class CraftFileChooser {
+    private static final ResourceBundle resources = Resources.findResourceBundle(CraftFileChooser.class);
 
     private static FileChooser fileChooser;
     private static DirectoryChooser directoryChooser;

@@ -1,14 +1,14 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.scene.control.TabPane;
 import javafx.scene.input.TransferMode;
 
-public final class NBTTabPane extends TabPane {
-    private static NBTTab currentDraggingTab;
+public final class CraftTabPane extends TabPane {
+    private static CraftTab currentDraggingTab;
 
-    final NBTEditorApp app;
+    final CraftEditorApp app;
 
-    public NBTTabPane(NBTEditorApp app) {
+    public CraftTabPane(CraftEditorApp app) {
         this.app = app;
         this.getStyleClass().add(Settings.UI_CSS_CLASS);
         this.setOnDragOver(e -> {
@@ -29,11 +29,11 @@ public final class NBTTabPane extends TabPane {
     }
 
 
-    public synchronized static NBTTab getCurrentDraggingTab() {
+    public synchronized static CraftTab getCurrentDraggingTab() {
         return currentDraggingTab;
     }
 
-    public synchronized static void setCurrentDraggingTab(NBTTab currentDraggingTab) {
-        NBTTabPane.currentDraggingTab = currentDraggingTab;
+    public synchronized static void setCurrentDraggingTab(CraftTab currentDraggingTab) {
+        CraftTabPane.currentDraggingTab = currentDraggingTab;
     }
 }

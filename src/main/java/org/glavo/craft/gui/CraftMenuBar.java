@@ -1,4 +1,4 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -12,27 +12,28 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.HyperlinkLabel;
-import org.glavo.nbt.util.CollectionHelper;
-import org.glavo.nbt.util.NodeHelper;
-import org.glavo.nbt.util.Resources;
+import org.glavo.craft.util.CollectionHelper;
+import org.glavo.craft.util.IOHelper;
+import org.glavo.craft.util.NodeHelper;
+import org.glavo.craft.util.Resources;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Function;
 
-import static org.glavo.nbt.util.Resources.findImage;
+import static org.glavo.craft.util.Resources.findImage;
 
-public final class NBTMenuBar extends MenuBar {
-    private static final ResourceBundle resources = Resources.findResourceBundle(NBTMenuBar.class);
+public final class CraftMenuBar extends MenuBar {
+    private static final ResourceBundle resources = Resources.findResourceBundle(CraftMenuBar.class);
 
-    final NBTEditorApp app;
+    final CraftEditorApp app;
 
-    public NBTMenuBar(NBTEditorApp app) {
+    public CraftMenuBar(CraftEditorApp app) {
         this.app = app;
         this.getStyleClass().add(Settings.UI_CSS_CLASS);
         addFileMenu();
@@ -49,6 +50,42 @@ public final class NBTMenuBar extends MenuBar {
     private static final KeyCombination OpenFolderAccelerator = KeyCombination.keyCombination("Shortcut+K");
     private static final KeyCombination SettingsAccelerator = KeyCombination.keyCombination("Shortcut+Alt+S");
 
+    private class RecentFileItem extends MenuItem {
+        private final Path path;
+
+        RecentFileItem(Path path) {
+            Objects.requireNonNull(path);
+            this.path = path;
+            this.setText(IOHelper.pathToURIString(path));
+            this.setOnAction(event -> {
+                if (Files.notExists(path)) {
+                    Dialog<ButtonType> notFound = new Dialog<>();
+                    notFound.setHeaderText(resources.getString("FileMenu.Items.OpenRecent.NotFoundDialog.HeaderText"));
+                    notFound.setContentText(String.format(resources.getString("FileMenu.Items.OpenRecent.NotFoundDialog.ContextText"), path));
+
+                    ButtonType okButton =
+                            new ButtonType(
+                                    resources.getString("FileMenu.Items.OpenRecent.NotFoundDialog.ButtonTypes.Ok.Name"),
+                                    ButtonBar.ButtonData.OK_DONE
+                            );
+                    ButtonType removeButton =
+                            new ButtonType(resources.getString("FileMenu.Items.OpenRecent.NotFoundDialog.ButtonTypes.RemoveFromList.Name"),
+                                    ButtonBar.ButtonData.FINISH
+                            );
+
+                    notFound.getDialogPane().getButtonTypes().addAll(okButton, removeButton);
+
+                    notFound.showAndWait().ifPresent(t -> {
+                        if (t == removeButton) {
+                            RecentFiles.remove(path);
+                        }
+                    });
+                }
+                //TODO
+            });
+        }
+    }
+
     private void addFileMenu() {
         Menu menu = new Menu(resources.getString("FileMenu.Name"));
 
@@ -58,8 +95,8 @@ public final class NBTMenuBar extends MenuBar {
         MenuItem openFileItem = new MenuItem(resources.getString("FileMenu.Items.OpenFile.Name"));
         openFileItem.setAccelerator(OpenFileAccelerator);
         openFileItem.setOnAction(event -> {
-            List<Path> paths = NBTFileChooser.chooseFiles(app.getStage());
-            if(paths != null) {
+            List<Path> paths = CraftFileChooser.chooseFiles(app.getStage());
+            if (paths != null) {
                 app.openFiles(paths);
             }
         });
@@ -71,11 +108,21 @@ public final class NBTMenuBar extends MenuBar {
         openFolderItem.setAccelerator(OpenFolderAccelerator);
 
         /*
+         * OpenRecent Item
+         */
+        Menu openRecent = new Menu(resources.getString("FileMenu.Items.OpenRecent.Name")); // TODO
+        ListChangeListener<Path> l = CollectionHelper.mapToEnd(
+                RecentFiles.recentFiles, openRecent.getItems(),
+                RecentFileItem::new
+        );
+        NodeHelper.save(this, l);
+
+        /*
          * Settings Item
          */
         MenuItem settingsItem = new MenuItem(resources.getString("FileMenu.Items.Settings.Name"));
         settingsItem.setAccelerator(SettingsAccelerator);
-        settingsItem.setOnAction(event -> NBTSettingsDialog.dialog().showAndWait());
+        settingsItem.setOnAction(event -> CraftSettingsDialog.dialog().showAndWait());
 
         /*
          * Exit Item
@@ -84,7 +131,7 @@ public final class NBTMenuBar extends MenuBar {
         exitItem.setOnAction(event -> Platform.exit());
 
         menu.getItems().addAll(
-                openFileItem, openFolderItem,
+                openFileItem, openFolderItem, openRecent,
                 new SeparatorMenuItem(),
                 settingsItem,
                 new SeparatorMenuItem(),
@@ -110,9 +157,9 @@ public final class NBTMenuBar extends MenuBar {
     private static final KeyCombination PreviousWindowAccelerator = KeyCombination.keyCombination("Shortcut+Alt+[");
 
     private static class WindowItem extends MenuItem {
-        private final NBTEditorApp theApp;
+        private final CraftEditorApp theApp;
 
-        private WindowItem(NBTEditorApp theApp, NBTEditorApp app) {
+        private WindowItem(CraftEditorApp theApp, CraftEditorApp app) {
             this.theApp = theApp;
             this.textProperty().bind(Bindings.createStringBinding(
                     () -> theApp.titleProperty.getValue() == null ?
@@ -135,7 +182,7 @@ public final class NBTMenuBar extends MenuBar {
         MenuItem newWindowItem = new MenuItem(resources.getString("WindowMenu.Items.NewWindow.Name"));
         newWindowItem.setOnAction(event -> {
             try {
-                new NBTEditorApp().start(new Stage());
+                new CraftEditorApp().start(new Stage());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -153,8 +200,8 @@ public final class NBTMenuBar extends MenuBar {
         MenuItem nextWindowItem = new MenuItem(resources.getString("WindowMenu.Items.NextWindow.Name"));
         nextWindowItem.setAccelerator(NextWindowAccelerator);
         nextWindowItem.setOnAction(event -> {
-            ObservableList<NBTEditorApp> apps = NBTEditorApp.apps;
-            assert NBTEditorApp.apps.size() > 0;
+            ObservableList<CraftEditorApp> apps = CraftEditorApp.apps;
+            assert CraftEditorApp.apps.size() > 0;
             int i = apps.indexOf(app);
             if (apps.size() > i + 1) {
                 apps.get(i + 1).getStage().toFront();
@@ -170,8 +217,8 @@ public final class NBTMenuBar extends MenuBar {
         MenuItem previousWindowItem = new MenuItem(resources.getString("WindowMenu.Items.PreviousWindow.Name"));
         previousWindowItem.setAccelerator(PreviousWindowAccelerator);
         previousWindowItem.setOnAction(event -> {
-            ObservableList<NBTEditorApp> apps = NBTEditorApp.apps;
-            assert NBTEditorApp.apps.size() > 0;
+            ObservableList<CraftEditorApp> apps = CraftEditorApp.apps;
+            assert CraftEditorApp.apps.size() > 0;
             int i = apps.indexOf(app);
             if (i == 0) {
                 apps.get(apps.size() - 1).getStage().toFront();
@@ -180,8 +227,8 @@ public final class NBTMenuBar extends MenuBar {
             }
         });
 
-        ListChangeListener<NBTEditorApp> l = c -> {
-            if (NBTEditorApp.apps.size() == 1) {
+        ListChangeListener<CraftEditorApp> l = c -> {
+            if (CraftEditorApp.apps.size() == 1) {
                 nextWindowItem.setDisable(true);
                 previousWindowItem.setDisable(true);
             } else {
@@ -189,14 +236,14 @@ public final class NBTMenuBar extends MenuBar {
                 previousWindowItem.setDisable(false);
             }
         };
-        if (NBTEditorApp.apps.size() == 1) {
+        if (CraftEditorApp.apps.size() == 1) {
             nextWindowItem.setDisable(true);
             previousWindowItem.setDisable(true);
         } else {
             nextWindowItem.setDisable(false);
             previousWindowItem.setDisable(false);
         }
-        NBTEditorApp.apps.addListener(new WeakListChangeListener<>(l));
+        CraftEditorApp.apps.addListener(new WeakListChangeListener<>(l));
         NodeHelper.save(this, l);
 
         menu.getItems().addAll(
@@ -206,7 +253,7 @@ public final class NBTMenuBar extends MenuBar {
                 new SeparatorMenuItem()
         );
         CollectionHelper.mapToEnd(
-                NBTEditorApp.apps, menu.getItems(),
+                CraftEditorApp.apps, menu.getItems(),
                 a -> new WindowItem(a, app)
         );
 
@@ -228,7 +275,7 @@ public final class NBTMenuBar extends MenuBar {
             pane.setOnMouseClicked(e -> stage.close());
 
             HyperlinkLabel text = new HyperlinkLabel(
-                    String.format(resources.getString("HelpMenu.Items.About.InfoText"), NBTEditorApp.VERSION)
+                    String.format(resources.getString("HelpMenu.Items.About.InfoText"), CraftEditorApp.VERSION)
             );
             text.setOnAction(e -> {
                 String link = ((Hyperlink) e.getSource()).getText();

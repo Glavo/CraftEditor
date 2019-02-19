@@ -1,4 +1,4 @@
-package org.glavo.nbt.util;
+package org.glavo.craft.util;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -30,7 +30,7 @@ public final class CollectionHelper {
                 } else if (c.wasRemoved()) {
                     target.remove(
                             c.getFrom() + targetOffset,
-                            c.getTo() + targetOffset);
+                            c.getFrom() + targetOffset + c.getRemovedSize());
                 } else if (c.wasAdded()) {
                     ArrayList<R> l = new ArrayList<>();
                     for (T v : c.getAddedSubList()) {
@@ -40,10 +40,10 @@ public final class CollectionHelper {
                 }
             }
         };
-        source.addListener(new WeakListChangeListener<>(listener));
         for (T e : source) {
             target.add(mapper.apply(e));
         }
+        source.addListener(new WeakListChangeListener<>(listener));
         return listener;
     }
 

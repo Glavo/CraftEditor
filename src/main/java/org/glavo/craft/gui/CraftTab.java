@@ -1,4 +1,4 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -21,22 +21,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class NBTTab extends Tab {
+public class CraftTab extends Tab {
     private final Label label = new Label();
 
-    public NBTTab() {
+    public CraftTab() {
         this(null);
     }
 
-    public NBTTab(String text) {
+    public CraftTab(String text) {
         this(text, null);
     }
 
-    public NBTTab(String text, Node content) {
+    public CraftTab(String text, Node content) {
         this.getStyleClass().add(Settings.UI_CSS_CLASS);
         this.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                throw new AssertionError("Cannot set NBTTab.text");
+                throw new AssertionError("Cannot set CraftTab.text");
             }
         });
         label.setText(text);
@@ -50,28 +50,28 @@ public class NBTTab extends Tab {
             c.putString(this.toString());
             dragboard.setContent(c);
             dragboard.setDragView(label.snapshot(null, null));
-            NBTTabPane.setCurrentDraggingTab(this);
+            CraftTabPane.setCurrentDraggingTab(this);
         });
         label.setOnDragOver(e -> {
-            if (NBTTabPane.getCurrentDraggingTab() != null &&
-                    NBTTabPane.getCurrentDraggingTab().getGraphic() != label) {
+            if (CraftTabPane.getCurrentDraggingTab() != null &&
+                    CraftTabPane.getCurrentDraggingTab().getGraphic() != label) {
                 e.acceptTransferModes(TransferMode.MOVE);
             }
         });
         label.setOnDragDropped(e -> {
-            NBTTab currentDraggingTab = NBTTabPane.getCurrentDraggingTab();
+            CraftTab currentDraggingTab = CraftTabPane.getCurrentDraggingTab();
             if (currentDraggingTab != null &&
                     currentDraggingTab.getGraphic() != label) {
                 ObservableList<Tab> tabs = this.getTabPane().getTabs();
                 int index = tabs.indexOf(this);
-                NBTTabPane.getCurrentDraggingTab().getTabPane().getTabs().remove(currentDraggingTab);
+                CraftTabPane.getCurrentDraggingTab().getTabPane().getTabs().remove(currentDraggingTab);
                 tabs.add(index, currentDraggingTab);
                 currentDraggingTab.getTabPane().getSelectionModel().select(currentDraggingTab);
                 e.consume();
             }
         });
         label.setOnDragDone(e -> {
-            NBTTabPane.setCurrentDraggingTab(null);
+            CraftTabPane.setCurrentDraggingTab(null);
             e.getDragboard().clear();
         });
         this.setGraphic(label);
@@ -98,9 +98,9 @@ public class NBTTab extends Tab {
         this.label.setText(value);
     }
 
-    public static NBTTab open(Path path) {
+    public static CraftTab open(Path path) {
         Objects.requireNonNull(path);
-        NBTTab tab = new NBTTab(path.getFileName().toString());
+        CraftTab tab = new CraftTab(path.getFileName().toString());
         if (Files.isDirectory(path)) {
             // TODO
         } else {
@@ -128,8 +128,8 @@ public class NBTTab extends Tab {
                 tab.getTabPane().getTabs().remove(tab);
                 Platform.runLater(() -> {
                     Throwable ex = event.getSource().getException();
-                    if (ex instanceof NBTException) {
-                        ((NBTException) ex).showDialog();
+                    if (ex instanceof CraftException) {
+                        ((CraftException) ex).showDialog();
                     } else {
                         new ExceptionDialog(ex).showAndWait();
                     }

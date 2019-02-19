@@ -1,16 +1,14 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableStringValue;
-import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.css.Styleable;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import org.glavo.nbt.util.Resources;
+import org.glavo.craft.util.Resources;
 
 import java.io.*;
 import java.net.URI;
@@ -19,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Observable;
 import java.util.Properties;
 
 public final class Settings implements Cloneable {

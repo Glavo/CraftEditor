@@ -1,8 +1,8 @@
-package org.glavo.nbt.util;
+package org.glavo.craft.util;
 
 import javafx.scene.image.Image;
-import org.glavo.nbt.gui.NBTEditorApp;
-import org.glavo.nbt.gui.Settings;
+import org.glavo.craft.gui.CraftEditorApp;
+import org.glavo.craft.gui.Settings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +18,7 @@ import java.util.jar.Manifest;
 public final class Resources {
     public static final Path HomePath;
     public static final Path SettingsPath;
+    public static final Path RecentFilesPath;
 
     public static final Manifest manifest;
 
@@ -26,11 +27,11 @@ public final class Resources {
     }
 
     public static Image findImage(String path) {
-        return new Image(NBTEditorApp.class.getResource("icons/" + path).toExternalForm());
+        return new Image(CraftEditorApp.class.getResource("icons/" + path).toExternalForm());
     }
 
     public static URL find(String path) {
-        return NBTEditorApp.class.getResource(path);
+        return CraftEditorApp.class.getResource(path);
     }
 
     public static InputStream open(String path) {
@@ -57,6 +58,15 @@ public final class Resources {
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+
+        RecentFilesPath = HomePath.resolve("RecentFiles");
+        if (Files.notExists(RecentFilesPath)) {
+            try {
+                Files.createFile(RecentFilesPath);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
 
         try (InputStream in = open("/META-INF/MANIFEST.MF")) {

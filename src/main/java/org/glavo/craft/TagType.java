@@ -1,4 +1,4 @@
-package org.glavo.nbt;
+package org.glavo.craft;
 
 import javafx.scene.image.Image;
 

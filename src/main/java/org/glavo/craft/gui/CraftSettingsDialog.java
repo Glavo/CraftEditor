@@ -1,8 +1,6 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
@@ -14,14 +12,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.PropertySheet;
-import org.controlsfx.property.BeanPropertyUtils;
-import org.glavo.nbt.util.Resources;
+import org.glavo.craft.util.Resources;
 
 import java.util.*;
 
-public final class NBTSettingsDialog extends Stage {
-    private static NBTSettingsDialog dialog;
-    private static final ResourceBundle resources = Resources.findResourceBundle(NBTSettingsDialog.class);
+public final class CraftSettingsDialog extends Stage {
+    private static CraftSettingsDialog dialog;
+    private static final ResourceBundle resources = Resources.findResourceBundle(CraftSettingsDialog.class);
 
     public abstract class SettingItem implements PropertySheet.Item {
         public final String propertyName;
@@ -117,9 +114,9 @@ public final class NBTSettingsDialog extends Stage {
         }
     };
 
-    public static NBTSettingsDialog dialog() {
+    public static CraftSettingsDialog dialog() {
         if (dialog == null) {
-            dialog = new NBTSettingsDialog();
+            dialog = new CraftSettingsDialog();
         }
         return dialog;
     }
@@ -127,7 +124,7 @@ public final class NBTSettingsDialog extends Stage {
     private ObservableMap<SettingItem, Object> changeList =
             FXCollections.observableMap(new TreeMap<>(Comparator.comparing(SettingItem::toString)));
 
-    private NBTSettingsDialog() {
+    private CraftSettingsDialog() {
         this.initModality(Modality.APPLICATION_MODAL);
         this.setTitle(resources.getString("Title"));
         this.setOnCloseRequest(event -> {

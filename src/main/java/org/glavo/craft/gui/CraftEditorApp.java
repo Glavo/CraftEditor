@@ -1,4 +1,4 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -10,21 +10,21 @@ import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
-import org.glavo.nbt.util.IOHelper;
-import org.glavo.nbt.util.Resources;
+import org.glavo.craft.util.IOHelper;
+import org.glavo.craft.util.Resources;
 
 import java.awt.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.Callable;
 
-public final class NBTEditorApp extends Application {
+public final class CraftEditorApp extends Application {
 
     public static final String APP_NAME = "CraftEditor";
 
     public static final String VERSION = Resources.manifest.getMainAttributes().getValue(APP_NAME + "-Version");
 
-    static final ObservableList<NBTEditorApp> apps =
+    static final ObservableList<CraftEditorApp> apps =
             FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
     public static final int DEFAULT_WIDTH;
@@ -43,6 +43,9 @@ public final class NBTEditorApp extends Application {
             DEFAULT_WIDTH = 750;
             DEFAULT_HEIGHT = 500;
         }
+
+        RecentFiles.load();
+        Runtime.getRuntime().addShutdownHook(new Thread(RecentFiles::save));
     }
 
     private Stage stage;
@@ -54,7 +57,7 @@ public final class NBTEditorApp extends Application {
         Settings.Global();
         this.stage = primaryStage;
 
-        NBTEditorPane pane = new NBTEditorPane(this);
+        CraftEditorPane pane = new CraftEditorPane(this);
         Scene scene = new Scene(pane, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         enableDragAndDrop(scene);
         primaryStage.setScene(scene);
@@ -73,11 +76,11 @@ public final class NBTEditorApp extends Application {
     }
 
     public void openFiles(List<? extends Path> p) {
-        NBTTabPane tabPane = getTabPane();
+        CraftTabPane tabPane = getTabPane();
         int size = p.size();
-        NBTTab[] tabs = new NBTTab[size];
+        CraftTab[] tabs = new CraftTab[size];
         for (int i = 0; i < size; i++) {
-            tabs[i] = NBTTab.open(p.get(i));
+            tabs[i] = CraftTab.open(p.get(i));
         }
         tabPane.getTabs().addAll(tabs);
     }
@@ -86,12 +89,12 @@ public final class NBTEditorApp extends Application {
         return stage;
     }
 
-    public NBTEditorPane getPane() {
-        return (NBTEditorPane) this.stage.getScene().getRoot();
+    public CraftEditorPane getPane() {
+        return (CraftEditorPane) this.stage.getScene().getRoot();
     }
 
-    public NBTTabPane getTabPane() {
-        return (NBTTabPane) getPane().getCenter();
+    public CraftTabPane getTabPane() {
+        return (CraftTabPane) getPane().getCenter();
     }
 
     private void enableDragAndDrop(Scene scene) {

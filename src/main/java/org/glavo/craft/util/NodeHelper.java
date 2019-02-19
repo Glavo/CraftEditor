@@ -1,4 +1,4 @@
-package org.glavo.nbt.util;
+package org.glavo.craft.util;
 
 import javafx.scene.Node;
 

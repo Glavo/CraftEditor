@@ -24,7 +24,7 @@ task release(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes 'Implementation-Version': '1.2',
-                'Main-Class': 'org.glavo.nbt.Main',
+                'Main-Class': 'org.glavo.craft.Main',
                 'Multi-Release': 'true',
                 'Add-Exports': 'javafx.graphics/com.sun.javafx.tk',
                 'CraftEditor-Version': project.version

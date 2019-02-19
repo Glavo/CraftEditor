@@ -1,4 +1,4 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import java.util.Objects;
 import java.util.function.Consumer;

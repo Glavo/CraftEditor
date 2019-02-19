@@ -1,14 +1,12 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
@@ -16,11 +14,10 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
-import org.glavo.nbt.TagType;
-import org.glavo.nbt.io.NBTReader;
-import org.glavo.nbt.util.Resources;
+import org.glavo.craft.TagType;
+import org.glavo.craft.io.NBTReader;
+import org.glavo.craft.util.Resources;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -298,7 +295,7 @@ class NBTTreeCellFactory implements Callback<TreeView<NBTTree>, TreeCell<NBTTree
     }
 }
 
-class IllegalFileFormatException extends NBTException {
+class IllegalFileFormatException extends CraftException {
     private static final ResourceBundle resources = Resources.findResourceBundle(IllegalFileFormatException.class);
 
     @Override

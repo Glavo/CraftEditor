@@ -1,13 +1,11 @@
-package org.glavo.nbt.io;
+package org.glavo.craft.io;
 
-import org.glavo.nbt.TagType;
+import org.glavo.craft.TagType;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;

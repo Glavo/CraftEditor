@@ -1,13 +1,8 @@
-package org.glavo.nbt.gui;
+package org.glavo.craft.gui;
 
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import org.glavo.nbt.util.Resources;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.util.List;
 import java.util.Objects;
 
 public final class FontHelper {
